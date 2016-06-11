@@ -42,4 +42,6 @@
             <version>20160212</version>
         </dependency>
     </dependencies>
+    <name>Calm Jenkins Integration Plugin</name>
+    <description>Jenkins Plugin to Integrate Calm with Jenkins</description>
 </project>

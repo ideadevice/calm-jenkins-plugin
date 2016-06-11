@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 package com.calmio.calm.integration;
+
+import com.calmio.calm.integration.Helpers.CalmCommunicator;
 import hudson.Launcher;
 import hudson.Extension;
 import hudson.util.FormValidation;
@@ -23,39 +25,48 @@ import jenkins.model.*;
 import hudson.model.*;
 import hudson.slaves.*;
 import hudson.plugins.sshslaves.SSHLauncher;
+import java.io.PrintStream;
+
 /**
  *
  * @author sa
  */
 public class CalmIntegrationLeader extends Builder {
-        private final String name;
+
+    private final String trigger, triggerBody;
+    private static String[] triggers = {"runBP", "runFlow", "runAppActionStart", "runAppActionStop", "runAppActionRestart", "runAppDelete", "runServiceActionupgrade"};
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public CalmIntegrationLeader(String name) {
-        this.name = name;
+    public CalmIntegrationLeader(String name, String triggerBody) {
+        this.trigger = name;
+        this.triggerBody = triggerBody;
     }
 
     /**
      * We'll use this from the <tt>config.jelly</tt>.
      */
-    public String getName() {
-        return name;
+    public String getTrigger() {
+        return trigger;
+    }
+
+    public String getTriggerBody() {
+        return triggerBody;
     }
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
         // This is where you 'build' the project.
-        // Since this is a dummy, we just say 'hello world' and call that a build.
+        PrintStream log =listener.getLogger();
+        log.println("##Executing Calm Integration Plugin Build Step##");
+        CalmCommunicator leader = new CalmCommunicator(getDescriptor().getURL(), getDescriptor().getUser(), getDescriptor().getPwd(), getDescriptor().getTimeOut(), log);
+        log.println("##Calm Communicator Initialized##");
 
-        // This also shows how you can consult the global configuration of the builder
-        try{
-        if (getDescriptor().getUseFrench())
-            listener.getLogger().println("Bonjour, "+name+"!");
-        else
-            listener.getLogger().println("Hello, "+name+"!");
-        Jenkins.getInstance().addNode(new DumbSlave("test-script", "test slave description", "/root", "1", Node.Mode.NORMAL, "test-slave-label", new SSHLauncher("127.0.0.1", 22, "41e97b20-121f-4fab-9808-2c544c9e4889", "", "", "", ""), new RetentionStrategy.Always(), new java.util.LinkedList()));
-        } catch(Exception e){}
+        try {
+            listener.getLogger().println("Hello, " + trigger + "!");
+            Jenkins.getInstance().addNode(new DumbSlave("test-script", "test slave description", "/root", "1", Node.Mode.NORMAL, "test-slave-label", new SSHLauncher("127.0.0.1", 22, "41e97b20-121f-4fab-9808-2c544c9e4889", "", "", "", ""), new RetentionStrategy.Always(), new java.util.LinkedList()));
+        } catch (Exception e) {
+        }
         return true;
     }
 
@@ -64,42 +75,54 @@ public class CalmIntegrationLeader extends Builder {
     // you don't have to do this.
     @Override
     public DescriptorImpl getDescriptor() {
-        return (DescriptorImpl)super.getDescriptor();
+        return (DescriptorImpl) super.getDescriptor();
     }
 
     /**
-     * Descriptor for {@link CalmIntegrationLeader}. Used as a singleton.
-     * The class is marked as public so that it can be accessed from views.
+     * Descriptor for {@link CalmIntegrationLeader}. Used as a singleton. The
+     * class is marked as public so that it can be accessed from views.
      *
      * <p>
-     * See <tt>src/main/resources/hudson/plugins//com/calmio/calm/integration/CalmIntegrationLeader/*.jelly</tt>
+     * See
+     * <tt>src/main/resources/hudson/plugins//com/calmio/calm/integration/CalmIntegrationLeader/*.jelly</tt>
      * for the actual HTML fragment for the configuration screen.
      */
     @Extension // This indicates to Jenkins that this is an implementation of an extension point.
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
+
         /**
-         * To persist global configuration information,
-         * simply store it in a field and call save().
+         * To persist global configuration information, simply store it in a
+         * field and call save().
          *
          * <p>
          * If you don't want fields to be persisted, use <tt>transient</tt>.
          */
-        private boolean useFrench;
+        private String calmURL, calmUser, calmPwd;
+        private int calmTimeOut;
 
         /**
-         * Performs on-the-fly validation of the form field 'name'.
+         * Performs on-the-fly validation of the form field 'trigger'.
          *
-         * @param value
-         *      This parameter receives the value that the user has typed.
-         * @return
-         *      Indicates the outcome of the validation. This is sent to the browser.
+         * @param value This parameter receives the value that the user has
+         * typed.
+         * @return Indicates the outcome of the validation. This is sent to the
+         * browser.
          */
-        public FormValidation doCheckName(@QueryParameter String value)
+        public FormValidation doCheckTrigger(@QueryParameter String value)
                 throws IOException, ServletException {
-            if (value.length() == 0)
-                return FormValidation.error("Please set a name");
-            if (value.length() < 4)
-                return FormValidation.warning("Isn't the name too short?");
+            boolean checker = false;
+            if (value.length() == 0) {
+                return FormValidation.error("Please set a Trigger");
+            }
+            for (String tri : triggers) {
+                if (value.trim().equalsIgnoreCase(tri)) {
+                    checker = true;
+                }
+            }
+            if (!checker) {
+                return FormValidation.error("Invalid Trigger");
+            }
+            // return FormValidation.warning("Isn't the name too short?");
             return FormValidation.ok();
         }
 
@@ -119,22 +142,39 @@ public class CalmIntegrationLeader extends Builder {
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
             // To persist global configuration information,
             // set that to properties and call save().
-            useFrench = formData.getBoolean("useFrench");
+            calmURL = formData.getString("calmURL");
+            calmUser = formData.getString("calmUser");
+            calmPwd = formData.getString("calmPwd");
+            calmTimeOut = formData.getInt("calmTimeOut");
             // ^Can also use req.bindJSON(this, formData);
             //  (easier when there are many fields; need set* methods for this, like setUseFrench)
             save();
-            return super.configure(req,formData);
+            return super.configure(req, formData);
         }
 
         /**
-         * This method returns true if the global configuration says we should speak French.
+         * This method returns true if the global configuration says we should
+         * speak French.
          *
-         * The method name is bit awkward because global.jelly calls this method to determine
-         * the initial state of the checkbox by the naming convention.
+         * The method trigger is bit awkward because global.jelly calls this
+         * method to determine the initial state of the checkbox by the naming
+         * convention.
          */
-        public boolean getUseFrench() {
-            return useFrench;
+        public String getURL() {
+            return calmURL;
+        }
+
+        public String getUser() {
+            return calmUser;
+        }
+
+        public String getPwd() {
+            return calmPwd;
+        }
+
+        public int getTimeOut() {
+            return calmTimeOut;
         }
     }
-    
+
 }

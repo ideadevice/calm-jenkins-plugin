@@ -10,8 +10,9 @@ package com.calmio.calm.integration.data;
  * @author sa
  */
 public class CalmMachine {
-    private String vmid, servName, vname, ip, cred, app, appID;
-    public CalmMachine(String vmID, String vmName, String serviceName, String ipAddress, String credentialName, String application, String applicationID){
+    private String vmid, servName, vname, ip, cred, app, appID, credUser;
+    int port;
+    public CalmMachine(String vmID, String vmName, String serviceName, String ipAddress, String credentialName, String application, String applicationID, String credUsername, String conPort){
         ip = ipAddress;
         cred = credentialName;
         app = application;
@@ -19,12 +20,18 @@ public class CalmMachine {
         vmid = vmID;
         vname = vmName;
         servName = serviceName;
+        credUser = credUsername;
+        port = Integer.parseInt(conPort);
     }
     
     public String getIP(){
         return ip;
     }
 
+    public int getPort(){
+        return port;
+    }
+    
     public String getVmName(){
         return vname;
     }
@@ -40,6 +47,10 @@ public class CalmMachine {
     public String getCred(){
         return cred;
     }
+
+    public String getCredUser(){
+        return credUser;
+    }
     
     public String getApplication(){
         return app;
@@ -54,6 +65,6 @@ public class CalmMachine {
     }
     
     public String getJenkinsVMLabel(){
-        return app + appID;
+        return app + "-" + appID;
     }
 }

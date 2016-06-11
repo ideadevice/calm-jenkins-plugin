@@ -8,6 +8,7 @@ package com.calmio.calm.integration.Helpers;
 import com.calmio.calm.integration.data.CalmMachine;
 import com.calmio.calm.integration.data.HTTPResponseData;
 import com.calmio.calm.integration.exceptions.CalmIntegrationException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,12 +24,13 @@ import org.json.JSONArray;
  */
 public class CalmCommunicator {
 
-    private String url, uname, password;
+    private final String url, uname, password;
     private int apiTimeOut = 1200;
     private final int stepTimer = 300;
-    private Map<String, String> functionMap;
+    private final Map<String, String> functionMap;
+    private final PrintStream leadLog;
 
-    public CalmCommunicator(String baseURL, String username, String pwd, int apiTimeOutInSecs) {
+    public CalmCommunicator(String baseURL, String username, String pwd, int apiTimeOutInSecs, PrintStream leadLog) {
         url = baseURL;
         uname = username;
         password = pwd;
@@ -38,6 +40,7 @@ public class CalmCommunicator {
         functionMap.put("start", "SUCCESS");
         functionMap.put("restart", "SUCCESS");
         functionMap.put("upgrade", "SUCCESS");
+        this.leadLog = leadLog;
     }
 
     public List<CalmMachine> runBP(String jsonBody) throws CalmIntegrationException {
@@ -52,6 +55,7 @@ public class CalmCommunicator {
     }
 
     private void waitForAppRunStatus(String appName, String stateToMet) throws CalmIntegrationException {
+        leadLog.println("Waiting for App: " + appName + " to reach: " + stateToMet);
         String state = "RANDOM";
         int appster = apiTimeOut;
         HTTPResponseData respo;
@@ -64,6 +68,7 @@ public class CalmCommunicator {
                 break;
             }
         }
+        leadLog.println("App: " + appName + " state: " + stateToMet);
     }
 
     private HTTPResponseData getAppStatus(String appName) throws CalmIntegrationException {
@@ -79,6 +84,7 @@ public class CalmCommunicator {
     }
 
     private void waitForAppFlowRunStatus(String appID, String flowID, String stateToMet) throws CalmIntegrationException {
+        leadLog.println("Waiting for App: " + appID + " and flow: " + flowID + " to reach: " + stateToMet);
         String state = "RANDOM";
         int appster = apiTimeOut;
         HTTPResponseData respo;
@@ -91,6 +97,7 @@ public class CalmCommunicator {
                 break;
             }
         }
+        leadLog.println("App: " + appID + " and flow: " + flowID + " status: " + stateToMet);
     }
 
     public List<CalmMachine> runFlowInApp(String jsonBody) throws CalmIntegrationException {
@@ -138,32 +145,34 @@ public class CalmCommunicator {
         JSONArray resourceList = respo.getJSONBody().getJSONObject("data").getJSONArray("rows");
         JSONObject m, bpArch;
         bpArch = HTTPHandlerInternal(false, url + "/api/1/default/applications/" + appID, null, "Fetching Application detail ").getJSONBody().getJSONObject("data").getJSONObject("row").getJSONObject("bp");
-        String vmID, vmName, serviceName, ipAddress, credentialName, application, applicationID, cpro, proid, credid;
-        for (int i=0; i < resourceList.length(); i++) {
+        String vmID, vmName, serviceName, ipAddress, port, credentialName, credUser, application, applicationID, cpro, proid, credid;
+        for (int i = 0; i < resourceList.length(); i++) {
             m = resourceList.getJSONObject(i);
             vmID = m.getString("calm_machine_id");
             vmName = m.getString("vm_name");
             serviceName = m.getString("calm_machine_name");
-            serviceName = serviceName.substring(0,serviceName.lastIndexOf("[")).trim();
+            serviceName = serviceName.substring(0, serviceName.lastIndexOf("[")).trim();
             ipAddress = m.getString("vm_ip");
             application = m.getString("calm_application_name");
-            applicationID = m.getString("calm_application_id");            
+            applicationID = m.getString("calm_application_id");
             cpro = getValueInJsonArray(bpArch.getJSONArray("architecture"), "name", serviceName, "current_profile");
             proid = getValueInJsonArray(bpArch.getJSONArray("profiles"), "uid", cpro, "provider");
+            port = getValueInJsonArray(bpArch.getJSONArray("profiles"), "uid", cpro, "service_port");            
             credid = getValueInJsonArray(bpArch.getJSONArray("tasks"), "uid", proid, "credential_id");
             credentialName = getValueInJsonArray(bpArch.getJSONArray("credentials"), "uid", credid, "name");
-            machineList.add(new CalmMachine(vmID, vmName, serviceName, ipAddress, credentialName, application, applicationID));       
+            credUser = getValueInJsonArray(bpArch.getJSONArray("credentials"), "uid", credid, "username");
+            machineList.add(new CalmMachine(vmID, vmName, serviceName, ipAddress, credentialName, application, applicationID, credUser, port));
         }
         return machineList;
     }
-    
-    private String getValueInJsonArray(JSONArray ja, String keyToSearch, String valueToEquate, String getKey){
+
+    private String getValueInJsonArray(JSONArray ja, String keyToSearch, String valueToEquate, String getKey) {
         JSONObject m;
-        for (int i=0; i < ja.length(); i++) {
+        for (int i = 0; i < ja.length(); i++) {
             m = ja.getJSONObject(i);
-            if(m.getString(keyToSearch).equalsIgnoreCase(valueToEquate)){
+            if (m.getString(keyToSearch).equalsIgnoreCase(valueToEquate)) {
                 return m.getString(getKey);
-            }            
+            }
         }
         return null;
     }
@@ -182,6 +191,7 @@ public class CalmCommunicator {
         try {
             if (method) {
                 respo = HTTPHandler.sendPost(url, params, uname, password);
+                leadLog.println("HTTP POST to:" + url + "\nWith body:" + params);                
             } else {
                 respo = HTTPHandler.sendGet(url, uname, password);
             }
