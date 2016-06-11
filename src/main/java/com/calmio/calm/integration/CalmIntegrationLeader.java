@@ -6,12 +6,15 @@
 package com.calmio.calm.integration;
 
 import com.calmio.calm.integration.Helpers.CalmCommunicator;
+import com.calmio.calm.integration.Helpers.JenkinsHandler;
+import com.calmio.calm.integration.exceptions.CalmIntegrationException;
 import hudson.Launcher;
 import hudson.Extension;
 import hudson.util.FormValidation;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.AbstractProject;
+import hudson.model.Descriptor;
 import hudson.tasks.Builder;
 import hudson.tasks.BuildStepDescriptor;
 import net.sf.json.JSONObject;
@@ -21,11 +24,9 @@ import org.kohsuke.stapler.QueryParameter;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import jenkins.model.*;
-import hudson.model.*;
-import hudson.slaves.*;
-import hudson.plugins.sshslaves.SSHLauncher;
 import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -34,7 +35,7 @@ import java.io.PrintStream;
 public class CalmIntegrationLeader extends Builder {
 
     private final String trigger, triggerBody;
-    private static String[] triggers = {"runBP", "runFlow", "runAppActionStart", "runAppActionStop", "runAppActionRestart", "runAppDelete", "runServiceActionupgrade"};
+    private static final String[] triggers = {"runBP", "runFlow", "runAppActionStart", "runAppActionStop", "runAppActionRestart", "runAppDelete", "runServiceActionupgrade"};
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
@@ -55,17 +56,44 @@ public class CalmIntegrationLeader extends Builder {
     }
 
     @Override
-    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
+    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException {
         // This is where you 'build' the project.
-        PrintStream log =listener.getLogger();
+        PrintStream log = listener.getLogger();
         log.println("##Executing Calm Integration Plugin Build Step##");
         CalmCommunicator leader = new CalmCommunicator(getDescriptor().getURL(), getDescriptor().getUser(), getDescriptor().getPwd(), getDescriptor().getTimeOut(), log);
         log.println("##Calm Communicator Initialized##");
-
         try {
-            listener.getLogger().println("Hello, " + trigger + "!");
-            Jenkins.getInstance().addNode(new DumbSlave("test-script", "test slave description", "/root", "1", Node.Mode.NORMAL, "test-slave-label", new SSHLauncher("127.0.0.1", 22, "41e97b20-121f-4fab-9808-2c544c9e4889", "", "", "", ""), new RetentionStrategy.Always(), new java.util.LinkedList()));
-        } catch (Exception e) {
+            switch (trigger) {
+                case "runBP":
+                    JenkinsHandler.addInstanceAllToJenkins(leader.runBP(triggerBody));
+                    break;
+                case "runFlow":
+                    JenkinsHandler.addInstanceAllToJenkins(leader.runFlowInApp(triggerBody));
+                    break;
+                case "runAppActionStart":
+                    leader.appActions("start", triggerBody);
+                    break;
+                case "runAppActionStop":
+                    leader.appActions("stop", triggerBody);
+                    break;
+                case "runAppActionRestart":
+                    leader.appActions("restart", triggerBody);
+                    break;
+                case "runAppDelete":
+                    JenkinsHandler.deleteAllInstanceForLabel(leader.deleteApp(triggerBody));
+                    break;
+                case "runServiceActionupgrade":
+                    leader.serviceActions("upgrade", triggerBody);
+                    break;
+                default:
+            }
+        } catch (CalmIntegrationException ex) {
+            log.println("Calm Exception: " + ex.getLocalizedMessage());
+            return false;
+        } catch (Descriptor.FormException ex) {
+            Logger.getLogger(CalmIntegrationLeader.class.getName()).log(Level.SEVERE, null, ex);
+            log.println("Form Exception: " + ex.getLocalizedMessage());
+            return false;
         }
         return true;
     }

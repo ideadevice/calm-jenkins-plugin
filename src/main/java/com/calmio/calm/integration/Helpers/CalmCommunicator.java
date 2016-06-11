@@ -112,7 +112,9 @@ public class CalmCommunicator {
         return getAllMachinesFromApp(appID, appName);
     }
 
-    public void appActions(String mode, String appName) throws CalmIntegrationException {
+    public void appActions(String mode, String jsonBody) throws CalmIntegrationException {
+        JSONObject inputJson = new JSONObject(jsonBody);
+        String appName = inputJson.getString("application_name");
         String appID = getAppStatus(appName).getJSONBody().getJSONObject("data").getJSONArray("rows").getJSONObject(0).getString("uid");
         HTTPResponseData respo;
         respo = HTTPHandlerInternal(true, url + "/api/1/default/applications/" + appID + "/" + mode, "{}", "App " + mode + " initiation");

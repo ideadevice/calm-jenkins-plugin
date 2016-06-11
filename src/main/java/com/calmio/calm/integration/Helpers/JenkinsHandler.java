@@ -48,6 +48,7 @@ public class JenkinsHandler {
     }
 
     public static void addInstanceAllToJenkins(List<CalmMachine> lm) throws IOException, Descriptor.FormException {
+        deleteAllInstanceForLabel(lm.get(0).getJenkinsVMLabel());
         for (CalmMachine m : lm) {
             addInstanceToJenkins(m);
         }
