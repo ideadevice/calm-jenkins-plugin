@@ -83,7 +83,7 @@ public class CalmIntegrationLeader extends Builder {
                 case "runAppDelete":
                     JenkinsHandler.deleteAllInstanceForLabel(leader.deleteApp(getTriggerBody()));
                     break;
-                case "runServiceActionupgrade":
+                case "runServiceActionUpgrade":
                     leader.serviceActions("upgrade", getTriggerBody());
                     break;
                 default:

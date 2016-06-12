@@ -1,0 +1,8 @@
+Started by user [8mha:AAAAlh+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzOEgYu/dLi1CL9vNKcHACFIKlWvwAAAA==[0manonymous
+Building in workspace /Users/sa/workspace/calm-jenkins-integration/work/jobs/testJobber1/workspace
+##Executing Calm Integration Plugin Build Step##
+##Calm Communicator Initialized##
+Calm Exception: Blueprint run  exception
+ Internal:[org.json.JSONTokener.syntaxError(JSONTokener.java:433), org.json.JSONObject.<init>(JSONObject.java:195), org.json.JSONObject.<init>(JSONObject.java:319), com.calmio.calm.integration.data.HTTPResponseData.<init>(HTTPResponseData.java:22), com.calmio.calm.integration.Helpers.HTTPHandler.sendPost(HTTPHandler.java:112), com.calmio.calm.integration.Helpers.CalmCommunicator.HTTPHandlerInternal(CalmCommunicator.java:196), com.calmio.calm.integration.Helpers.CalmCommunicator.runBP(CalmCommunicator.java:52), com.calmio.calm.integration.CalmIntegrationLeader.perform(CalmIntegrationLeader.java:69), hudson.tasks.BuildStepMonitor$1.perform(BuildStepMonitor.java:20), hudson.model.AbstractBuild$AbstractBuildExecution.perform(AbstractBuild.java:785), hudson.model.Build$BuildExecution.build(Build.java:205), hudson.model.Build$BuildExecution.doRun(Build.java:162), hudson.model.AbstractBuild$AbstractBuildExecution.run(AbstractBuild.java:537), hudson.model.Run.execute(Run.java:1741), hudson.model.FreeStyleBuild.run(FreeStyleBuild.java:43), hudson.model.ResourceController.execute(ResourceController.java:98), hudson.model.Executor.run(Executor.java:408)]
+Build step 'Calm Integration' marked build as failure
+Finished: FAILURE

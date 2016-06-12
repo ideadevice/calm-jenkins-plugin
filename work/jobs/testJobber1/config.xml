@@ -14,7 +14,7 @@
   <builders>
     <com.calmio.calm.integration.CalmIntegrationLeader plugin="Calm-Integration@1.0-SNAPSHOT">
       <event>runBP</event>
-      <triggerBody>{&quot;blueprint_name&quot;:&quot;test_AWS_flows&quot;, &quot;application_name&quot;:&quot;kola1&quot;, &quot;team_name&quot;:&quot;Administrator Team&quot;, &quot;budget_name&quot;:&quot;budget4&quot;, &quot;properties&quot;:[]}</triggerBody>
+      <triggerBody>{&quot;blueprint_name&quot;:&quot;test_All_property_flowdown_array&quot;, &quot;application_name&quot;:&quot;kola1&quot;, &quot;team_name&quot;:&quot;Administrator Team&quot;, &quot;budget_name&quot;:&quot;budget4&quot;, &quot;properties&quot;:[]}</triggerBody>
     </com.calmio.calm.integration.CalmIntegrationLeader>
   </builders>
   <publishers/>

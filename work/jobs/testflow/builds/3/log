@@ -1,0 +1,11 @@
+Started by user [8mha:AAAAlh+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzOEgYu/dLi1CL9vNKcHACFIKlWvwAAAA==[0manonymous
+Building on master in workspace /Users/sa/workspace/calm-jenkins-integration/work/jobs/testflow/workspace
+##Executing Calm Integration Plugin Build Step##
+##Calm Communicator Initialized##
+HTTP POST to:http://temp.calm.io/public/api/1/default/applications/flows/run
+With body:{"application_name":"kola1", "flow_name":"up"}
+Calm Exception: App status get  exception
+ HTTP Response:400
+ HTTP body:{"message":"Invalid route","code":1,"data":null}
+Build step 'Calm Integration' marked build as failure
+Finished: FAILURE
