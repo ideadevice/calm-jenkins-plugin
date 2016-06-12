@@ -12,7 +12,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Base64;
+//import java.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpGet;
@@ -42,7 +43,8 @@ public class HTTPHandler {
         int responseCode = 0;
         StringBuffer respo = null;
         String userPassword = username + ":" + pwd;
-        String encoding = Base64.getEncoder().encodeToString(userPassword.getBytes());
+//        String encoding = Base64.getEncoder().encodeToString(userPassword.getBytes());
+        String encoding = Base64.encodeBase64String(userPassword.getBytes());
 
         try {
             HttpGet request = new HttpGet(url);
@@ -83,7 +85,8 @@ public class HTTPHandler {
         int responseCode = 0;
         StringBuffer respo = null;
         String userPassword = username + ":" + pwd;
-        String encoding = Base64.getEncoder().encodeToString(userPassword.getBytes());
+//        String encoding = Base64.getEncoder().encodeToString(userPassword.getBytes());
+        String encoding = Base64.encodeBase64String(userPassword.getBytes());
 
         try {
             HttpPost request = new HttpPost(url);
