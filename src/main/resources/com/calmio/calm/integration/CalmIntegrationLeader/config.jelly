@@ -9,11 +9,23 @@
     <!--
       Creates a text field that shows the value of the "name" property.
       When submitted, it will be passed to the corresponding constructor parameter.
-    -->
+
     <f:entry title="Trigger" field="event" description="runBP / runFlow / runAppAction{Start,Stop,Restart} / runAppDelete / runServiceAction{Upgrade}">
         <f:textbox />
     </f:entry>
-    <f:entry title="Trigger Body(JSON body)" field="triggerBody">
-        <f:textbox />
+    -->
+    <f:entry name="event" title="Trigger" field="event">
+        <select name="event">
+            <option selected="true" value="runBP">Run Blueprint</option>
+            <option value="runFlow">Run flow in a deployment</option>
+            <option value="runAppActionStart">Start a deployment</option>
+            <option value="runAppActionStop">Stop a deployment</option>
+            <option value="runAppActionRestart">Retart a deployment</option>
+            <option value="runAppDelete">Delete a deployment</option>
+            <option value="runServiceActionUpgrade">Run an upgrade on array in a deployment</option>
+        </select>
+    </f:entry>    
+    <f:entry title="Trigger Body (JSON)" field="triggerBody">
+        <f:textarea />
     </f:entry>
 </j:jelly>

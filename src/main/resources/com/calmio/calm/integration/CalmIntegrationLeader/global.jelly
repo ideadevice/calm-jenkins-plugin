@@ -14,7 +14,7 @@
     -->
     <f:section title="Calm-Integration-Configuration">
         <f:entry title="Calm URL" field="calmURL"
-                 description="Calm URL.">
+                 description="Calm URL. eg: https://a.b.com">
             <f:textbox />
         </f:entry>
         <f:entry title="Calm Username" field="calmUser"
@@ -23,11 +23,11 @@
         </f:entry>
         <f:entry title="Calm Password" field="calmPwd"
                  description="Password.">
-            <f:textbox />
+            <f:password />
         </f:entry>
         <f:entry title="Calm API timeout(sec)" field="calmTimeOut"
                          description="Calm API TimeOut in Secs">
-            <f:textbox />
+            <f:number value="600"/>
         </f:entry>
     </f:section>
 </j:jelly>

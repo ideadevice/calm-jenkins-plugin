@@ -41,7 +41,7 @@ public class CalmIntegrationLeader extends Builder {
     @DataBoundConstructor
     public CalmIntegrationLeader(String event, String triggerBody) {
         this.event = event;
-        this.triggerBody = triggerBody;
+        this.triggerBody = triggerBody.replace("\n", "").replace("\r", "");
 
     }
 
