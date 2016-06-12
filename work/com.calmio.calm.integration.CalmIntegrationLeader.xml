@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<com.calmio.calm.integration.CalmIntegrationLeader_-DescriptorImpl plugin="Calm-Integration@1.0-SNAPSHOT">
+  <calmURL>http://temp.calm.io</calmURL>
+  <calmUser>admin</calmUser>
+  <calmPwd>admin</calmPwd>
+  <calmTimeOut>600</calmTimeOut>
+</com.calmio.calm.integration.CalmIntegrationLeader_-DescriptorImpl>

@@ -10,7 +10,7 @@
       Creates a text field that shows the value of the "name" property.
       When submitted, it will be passed to the corresponding constructor parameter.
     -->
-    <f:entry title="Trigger" field="trigger" description="runBP/runFlow/runAppAction{Start,Stop,Restart}/runAppDelete/runServiceAction{upgrade}">
+    <f:entry title="Trigger" field="event" description="runBP/runFlow/runAppAction{Start,Stop,Restart}/runAppDelete/runServiceAction{upgrade}">
         <f:textbox />
     </f:entry>
     <f:entry title="Trigger Body(JSON body)" field="triggerBody">

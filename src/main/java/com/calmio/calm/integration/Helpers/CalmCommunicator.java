@@ -199,7 +199,7 @@ public class CalmCommunicator {
             }
         } catch (Exception ex) {
             Logger.getLogger(CalmCommunicator.class.getName()).log(Level.SEVERE, null, ex);
-            throw new CalmIntegrationException(ExceptionMsg + " exception\n Internal:" + ex.getLocalizedMessage());
+            throw new CalmIntegrationException(ExceptionMsg + " exception\n Internal:" + ex);
         }
         if (respo.getStatusCode() != 200) {
             throw new CalmIntegrationException(ExceptionMsg + " exception\n HTTP Response:" + respo.getStatusCode() + "\n HTTP body:" + respo.getBody());

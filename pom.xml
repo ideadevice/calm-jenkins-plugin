@@ -41,6 +41,12 @@
             <artifactId>json</artifactId>
             <version>20160212</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <name>Calm Jenkins Integration Plugin</name>
     <description>Jenkins Plugin to Integrate Calm with Jenkins</description>

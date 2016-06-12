@@ -1,13 +1,15 @@
 Manifest-Version: 1.0
 Group-Id: com.calmio
 Short-Name: Calm-Integration
-Long-Name: Calm-Integration
-Plugin-Version: 1.0-SNAPSHOT (private-06/07/2016 12:35-sa)
+Long-Name: Calm Jenkins Integration Plugin
+Plugin-Version: 1.0-SNAPSHOT (private-f5e15452-sa)
 Hudson-Version: 1.625.3
 Jenkins-Version: 1.625.3
-Plugin-Dependencies: ssh-slaves:3.0.1,credentials:1.9.4
+Plugin-Dependencies: credentials:1.9.4,ssh-slaves:3.0.1
 Plugin-Developers: 
-Libraries: /Users/sa/workspace/Calm-Integration/src/main/resources,/Us
- ers/sa/workspace/Calm-Integration/target/classes
-Resource-Path: /Users/sa/workspace/Calm-Integration/src/main/webapp
+Libraries: /Users/sa/workspace/calm-jenkins-integration/src/main/resou
+ rces,/Users/sa/workspace/calm-jenkins-integration/target/classes,/Use
+ rs/sa/.m2/repository/org/json/json/20160212/json-20160212.jar
+Resource-Path: /Users/sa/workspace/calm-jenkins-integration/src/main/w
+ ebapp
 

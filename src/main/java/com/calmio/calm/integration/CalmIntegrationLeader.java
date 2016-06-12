@@ -34,21 +34,22 @@ import java.util.logging.Logger;
  */
 public class CalmIntegrationLeader extends Builder {
 
-    private final String trigger, triggerBody;
+    private final String event, triggerBody;
     private static final String[] triggers = {"runBP", "runFlow", "runAppActionStart", "runAppActionStop", "runAppActionRestart", "runAppDelete", "runServiceActionupgrade"};
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public CalmIntegrationLeader(String name, String triggerBody) {
-        this.trigger = name;
+    public CalmIntegrationLeader(String event, String triggerBody) {
+        this.event = event;
         this.triggerBody = triggerBody;
+
     }
 
     /**
      * We'll use this from the <tt>config.jelly</tt>.
      */
-    public String getTrigger() {
-        return trigger;
+    public String getEvent() {
+        return event;
     }
 
     public String getTriggerBody() {
@@ -63,27 +64,27 @@ public class CalmIntegrationLeader extends Builder {
         CalmCommunicator leader = new CalmCommunicator(getDescriptor().getURL(), getDescriptor().getUser(), getDescriptor().getPwd(), getDescriptor().getTimeOut(), log);
         log.println("##Calm Communicator Initialized##");
         try {
-            switch (trigger) {
+            switch (event) {
                 case "runBP":
-                    JenkinsHandler.addInstanceAllToJenkins(leader.runBP(triggerBody));
+                    JenkinsHandler.addInstanceAllToJenkins(leader.runBP(getTriggerBody()));
                     break;
                 case "runFlow":
-                    JenkinsHandler.addInstanceAllToJenkins(leader.runFlowInApp(triggerBody));
+                    JenkinsHandler.addInstanceAllToJenkins(leader.runFlowInApp(getTriggerBody()));
                     break;
                 case "runAppActionStart":
-                    leader.appActions("start", triggerBody);
+                    leader.appActions("start", getTriggerBody());
                     break;
                 case "runAppActionStop":
-                    leader.appActions("stop", triggerBody);
+                    leader.appActions("stop", getTriggerBody());
                     break;
                 case "runAppActionRestart":
-                    leader.appActions("restart", triggerBody);
+                    leader.appActions("restart", getTriggerBody());
                     break;
                 case "runAppDelete":
-                    JenkinsHandler.deleteAllInstanceForLabel(leader.deleteApp(triggerBody));
+                    JenkinsHandler.deleteAllInstanceForLabel(leader.deleteApp(getTriggerBody()));
                     break;
                 case "runServiceActionupgrade":
-                    leader.serviceActions("upgrade", triggerBody);
+                    leader.serviceActions("upgrade", getTriggerBody());
                     break;
                 default:
             }
@@ -136,7 +137,7 @@ public class CalmIntegrationLeader extends Builder {
          * @return Indicates the outcome of the validation. This is sent to the
          * browser.
          */
-        public FormValidation doCheckTrigger(@QueryParameter String value)
+        public FormValidation doCheckEvent(@QueryParameter String value)
                 throws IOException, ServletException {
             boolean checker = false;
             if (value.length() == 0) {

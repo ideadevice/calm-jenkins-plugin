@@ -8,11 +8,19 @@ package com.calmio.calm.integration.Helpers;
 import com.calmio.calm.integration.data.HTTPResponseData;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import javax.net.ssl.HttpsURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.http.auth.Credentials;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 
 /**
  *
@@ -20,85 +28,96 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class HTTPHandler {
 
+    private static final String USER_AGENT = "Mozilla/5.0";
 
-	private static final String USER_AGENT = "Mozilla/5.0";
+    // HTTP GET request
+    public static HTTPResponseData sendGet(String url, String username, String pwd) throws Exception {
+        CloseableHttpClient client = HttpClientBuilder.create()
+                .setDefaultCredentialsProvider(getCredentialsProvider(url, username, pwd))
+                .build();
 
-	// HTTP GET request
-	public static HTTPResponseData sendGet(String url, String username, String pwd) throws Exception {
-            
-		URL obj = new URL(url);
-                String userPassword = username + ":" + pwd;
-                String encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
- 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        int responseCode = 0;
+        StringBuffer respo = null;
 
-		// optional default is GET
-                con.setRequestProperty("Authorization", "Basic " + encoding);
-		con.setRequestMethod("GET");
-
-		//add request header
-		con.setRequestProperty("User-Agent", USER_AGENT);
-
-		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + responseCode);
-
-                StringBuffer response;
-            try (BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()))) {
+        try {
+            HttpGet request = new HttpGet(url);
+            request.addHeader("User-Agent", USER_AGENT);
+            System.out.println("Executing request " + request.getRequestLine());
+            CloseableHttpResponse response = client.execute(request);
+            try {
+                responseCode = response.getStatusLine().getStatusCode();
+                System.out.println("\nSending 'GET' request to URL : " + url);
+                System.out.println("Response Code : " + responseCode);
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(response.getEntity().getContent()));
+                respo = new StringBuffer();
                 String inputLine;
-                response = new StringBuffer();
                 while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
+                    respo.append(inputLine);
                 }
+            } finally {
+                response.close();
             }
-            
-            //print result
-            HTTPResponseData result = new HTTPResponseData(responseCode, response.toString());
-            System.out.println(result.getStatusCode() +"/n"+ result.getBody());
-            return result;
-	}
-	
-	// HTTP POST request
-	public static HTTPResponseData sendPost(String url, String body, String username, String pwd) throws Exception {
+        } finally {
+            client.close();
+        }
 
-		URL obj = new URL(url);
-                String userPassword = username + ":" + pwd;
-                String encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
-		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+        HTTPResponseData result = new HTTPResponseData(responseCode, ((respo == null) ? "" : respo.toString()));
+        System.out.println(result.getStatusCode() + "/n" + result.getBody());
+        return result;
+    }
+    // HTTP POST request
 
-		//add reuqest header
-		con.setRequestMethod("POST");
-		con.setRequestProperty("User-Agent", USER_AGENT);
-		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-                con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-		
-		// Send post request
-		con.setDoOutput(true);
-            try (OutputStream wr = con.getOutputStream()) {
-                wr.write(body.getBytes());
-                wr.flush();
-            }
+    public static HTTPResponseData sendPost(String url, String body, String username, String pwd) throws Exception {
 
-		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'POST' request to URL : " + url);
-		System.out.println("Post body : " + body);
-		System.out.println("Response Code : " + responseCode);
+        CloseableHttpClient client = HttpClientBuilder.create()
+                .setDefaultCredentialsProvider(getCredentialsProvider(url, username, pwd))
+                .build();
 
-                StringBuffer response;
-            try (BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()))) {
+        int responseCode = 0;
+        StringBuffer respo = null;
+
+        try {
+            HttpPost request = new HttpPost(url);
+            request.addHeader("User-Agent", USER_AGENT);
+            request.addHeader("Accept-Language", "en-US,en;q=0.5");
+            request.addHeader("Content-Type", "application/json; charset=UTF-8");
+            request.setHeader("Accept", "application/json");
+            System.out.println("Executing request " + request.getRequestLine());
+            StringEntity se = new StringEntity(body);
+            request.setEntity(se);
+            CloseableHttpResponse response = client.execute(request);
+            try {
+                responseCode = response.getStatusLine().getStatusCode();
+                System.out.println("\nSending 'POST' request to URL : " + url);
+                System.out.println("Post body : " + body);
+                System.out.println("Response Code : " + responseCode);
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(response.getEntity().getContent()));
+                respo = new StringBuffer();
                 String inputLine;
-                response = new StringBuffer();
                 while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
+                    respo.append(inputLine);
                 }
+            } finally {
+                response.close();
             }
-		
-            //print result
-            HTTPResponseData result = new HTTPResponseData(responseCode, response.toString());
-            System.out.println(result.getStatusCode() +"/n"+ result.getBody());
-            return result;
+        } finally {
+            client.close();
+        }
 
-	}
+        HTTPResponseData result = new HTTPResponseData(responseCode, ((respo == null) ? "" : respo.toString()));
+        System.out.println(result.getStatusCode() + "/n" + result.getBody());
+        return result;
+    }
+
+    private static CredentialsProvider getCredentialsProvider(String url, String user, String pwd) throws URISyntaxException {
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        URI uri = new URI(url);
+        String domain = uri.getHost();
+        domain = domain.startsWith("www.") ? domain.substring(4) : domain;
+        credsProvider.setCredentials(new AuthScope(domain, uri.getPort()), (Credentials) new UsernamePasswordCredentials(user, pwd));
+        return credsProvider;
+    }
 
 }
