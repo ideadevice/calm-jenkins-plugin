@@ -1,0 +1,9 @@
+Started by user [8mha:AAAAlh+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzOEgYu/dLi1CL9vNKcHACFIKlWvwAAAA==[0manonymous
+Building in workspace /Users/sa/workspace/calm-jenkins-integration/work/jobs/serviceAction/workspace
+##Executing Calm Integration Plugin Build Step##
+##Calm Communicator Initialized##
+HTTP POST to:http://temp.calm.io/public/api/1/default/applications/strategy/run
+With body:{"application_name":"load1", "service_name":"Resource 1", "version":"6", "action": "upgrade"}
+Waiting for App: load1 to reach: SUCCESS
+App: load1 state: SUCCESS
+Finished: SUCCESS

@@ -7,7 +7,7 @@ package com.calmio.calm.integration.data;
 
 /**
  *
- * @author sa
+ * @author shriyanshagnihotri
  */
 public class CalmMachine {
     private String vmid, servName, vname, ip, cred, app, appID, credUser;

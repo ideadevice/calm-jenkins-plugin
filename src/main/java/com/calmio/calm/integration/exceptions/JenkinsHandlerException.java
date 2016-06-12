@@ -7,7 +7,7 @@ package com.calmio.calm.integration.exceptions;
 
 /**
  *
- * @author sa
+ * @author shriyanshagnihotri
  */
 public class JenkinsHandlerException extends Exception {
     public JenkinsHandlerException(String msg){

@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 /**
  *
- * @author sa
+ * @author shriyanshagnihotri
  */
 public class HTTPResponseData {
     private int statusCode;

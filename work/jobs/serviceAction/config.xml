@@ -13,7 +13,7 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <com.calmio.calm.integration.CalmIntegrationLeader plugin="Calm-Integration@1.0-SNAPSHOT">
-      <event>runServiceActionupgrade</event>
+      <event>runServiceActionUpgrade</event>
       <triggerBody>{&quot;application_name&quot;:&quot;load1&quot;, &quot;service_name&quot;:&quot;Resource 1&quot;, &quot;version&quot;:&quot;6&quot;, &quot;action&quot;: &quot;upgrade&quot;}</triggerBody>
     </com.calmio.calm.integration.CalmIntegrationLeader>
   </builders>

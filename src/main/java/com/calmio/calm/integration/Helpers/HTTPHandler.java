@@ -27,7 +27,7 @@ import org.apache.http.impl.client.HttpClients;
 
 /**
  *
- * @author sa
+ * @author shriyanshagnihotri
  */
 public class HTTPHandler {
 

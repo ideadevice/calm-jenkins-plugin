@@ -7,7 +7,7 @@ package com.calmio.calm.integration.exceptions;
 
 /**
  *
- * @author sa
+ * @author shriyanshagnihotri
  */
 public class CalmIntegrationException extends Exception {
     public CalmIntegrationException(String msg){

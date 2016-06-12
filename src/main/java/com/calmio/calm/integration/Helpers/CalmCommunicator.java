@@ -21,7 +21,7 @@ import org.json.JSONArray;
 
 /**
  *
- * @author sa
+ * @author shriyanshagnihotri
  */
 public class CalmCommunicator {
 

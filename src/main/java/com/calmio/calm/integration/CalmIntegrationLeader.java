@@ -30,12 +30,12 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author sa
+ * @author shriyanshagnihotri
  */
 public class CalmIntegrationLeader extends Builder {
 
     private final String event, triggerBody;
-    private static final String[] triggers = {"runBP", "runFlow", "runAppActionStart", "runAppActionStop", "runAppActionRestart", "runAppDelete", "runServiceActionupgrade"};
+    private static final String[] triggers = {"runBP", "runFlow", "runAppActionStart", "runAppActionStop", "runAppActionRestart", "runAppDelete", "runServiceActionUpgrade"};
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
