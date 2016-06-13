@@ -195,7 +195,7 @@ public class CalmCommunicator {
             vmID = m.getString("calm_machine_id");
             vmName = m.getString("vm_name");
             serviceName = m.getString("calm_machine_name");
-            serviceName = serviceName.substring(0, (serviceName.lastIndexOf("[") < 1 ? serviceName.length() - 1 : serviceName.lastIndexOf("["))).trim();
+            serviceName = serviceName.substring(0, (serviceName.lastIndexOf("[") < 1 ? serviceName.length(): serviceName.lastIndexOf("["))).trim();
             ipAddress = m.getString("vm_ip");
             application = m.getString("calm_application_name");
             applicationID = m.getString("calm_application_id");
