@@ -41,36 +41,35 @@ public class HTTPHandler {
                 .build();
 
         int responseCode = 0;
-        StringBuffer respo = null;
+        StringBuffer respo;
         String userPassword = username + ":" + pwd;
 //        String encoding = Base64.getEncoder().encodeToString(userPassword.getBytes());
-        String encoding = Base64.encodeBase64String(userPassword.getBytes());
+        String encoding = Base64.encodeBase64String(userPassword.getBytes("UTF-8"));
 
         try {
             HttpGet request = new HttpGet(url);
             request.addHeader("Authorization", "Basic " + encoding);
             request.addHeader("User-Agent", USER_AGENT);
             System.out.println("Executing request " + request.getRequestLine());
-            CloseableHttpResponse response = client.execute(request);
-            try {
+            try (CloseableHttpResponse response = client.execute(request)) {
                 responseCode = response.getStatusLine().getStatusCode();
                 System.out.println("\nSending 'GET' request to URL : " + url);
                 System.out.println("Response Code : " + responseCode);
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(response.getEntity().getContent()));
-                respo = new StringBuffer();
-                String inputLine;
-                while ((inputLine = in.readLine()) != null) {
-                    respo.append(inputLine);
+                try (BufferedReader in = new BufferedReader(
+                        new InputStreamReader(response.getEntity().getContent(), "UTF-8"))) {
+                    respo = new StringBuffer();
+                    String inputLine;
+                    while ((inputLine = in.readLine()) != null) {
+                        respo.append(inputLine);
+                    }
+                    in.close();
                 }
-            } finally {
-                response.close();
             }
         } finally {
             client.close();
         }
 
-        HTTPResponseData result = new HTTPResponseData(responseCode, ((respo == null) ? "" : respo.toString()));
+        HTTPResponseData result = new HTTPResponseData(responseCode, respo.toString());
         System.out.println(result.getStatusCode() + "/n" + result.getBody());
         return result;
     }
@@ -83,10 +82,10 @@ public class HTTPHandler {
                 .build();
 
         int responseCode = 0;
-        StringBuffer respo = null;
+        StringBuffer respo;
         String userPassword = username + ":" + pwd;
 //        String encoding = Base64.getEncoder().encodeToString(userPassword.getBytes());
-        String encoding = Base64.encodeBase64String(userPassword.getBytes());
+        String encoding = Base64.encodeBase64String(userPassword.getBytes("UTF-8"));
 
         try {
             HttpPost request = new HttpPost(url);
@@ -99,27 +98,26 @@ public class HTTPHandler {
             System.out.println("Executing request " + Arrays.toString(request.getAllHeaders()));
             StringEntity se = new StringEntity(body);
             request.setEntity(se);
-            CloseableHttpResponse response = client.execute(request);
-            try {
+            try (CloseableHttpResponse response = client.execute(request)) {
                 responseCode = response.getStatusLine().getStatusCode();
                 System.out.println("\nSending 'POST' request to URL : " + url);
                 System.out.println("Post body : " + body);
                 System.out.println("Response Code : " + responseCode);
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(response.getEntity().getContent()));
-                respo = new StringBuffer();
-                String inputLine;
-                while ((inputLine = in.readLine()) != null) {
-                    respo.append(inputLine);
+                try (BufferedReader in = new BufferedReader(
+                        new InputStreamReader(response.getEntity().getContent(), "UTF-8"))) {
+                    respo = new StringBuffer();
+                    String inputLine;
+                    while ((inputLine = in.readLine()) != null) {
+                        respo.append(inputLine);
+                    }
+                    in.close();
                 }
-            } finally {
-                response.close();
             }
         } finally {
             client.close();
         }
 
-        HTTPResponseData result = new HTTPResponseData(responseCode, ((respo == null) ? "" : respo.toString()));
+        HTTPResponseData result = new HTTPResponseData(responseCode, respo.toString());
         System.out.println(result.getStatusCode() + "/n" + result.getBody());
         return result;
     }

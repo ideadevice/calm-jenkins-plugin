@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 /**
  *
@@ -46,7 +47,6 @@ public class CalmCommunicator {
 
     public List<CalmMachine> runBP(String jsonBody) throws CalmIntegrationException {
         JSONObject inputJson = new JSONObject(jsonBody);
-        String bpName = inputJson.getString("blueprint_name");
         String appName = inputJson.getString("application_name");
         HTTPResponseData respo;
         respo = HTTPHandlerInternal(true, url + "/public/api/1/default/blueprints/run", jsonBody, "Blueprint run ");
@@ -153,6 +153,7 @@ public class CalmCommunicator {
         String appID = getAppStatus(appName).getString("uid");
         HTTPResponseData respo;
         respo = HTTPHandlerInternal(true, url + "/api/1/default/applications/" + appID + "/" + mode, "{}", "App " + mode + " initiation");
+        respo = null;
         waitForAppRunStatus(appName, appID, functionMap.get(mode));
     }
 
@@ -162,6 +163,7 @@ public class CalmCommunicator {
         String appID = getAppStatus(appName).getString("uid");
         HTTPResponseData respo;
         respo = HTTPHandlerInternal(true, url + "/public/api/1/default/applications/" + ((actionType.equalsIgnoreCase("upgrade")) ? "strategy" : actionType) + "/run", jsonBody, "App " + actionType + " initiation");
+        respo = null;
         waitForAppRunStatus(appName, appID, functionMap.get(actionType));
     }
 
@@ -170,11 +172,12 @@ public class CalmCommunicator {
         String appName = inputJson.getString("application_name");
         HTTPResponseData respo;
         respo = HTTPHandlerInternal(true, url + "/public/api/1/default/applications/delete", jsonBody, "Application delete initiation ");
+        respo = null;
         try {
             String appID = getAppStatus(appName).getString("uid");
             waitForAppToDelete(appName, appID);
             return appName + "-" + appID;
-        } catch (Exception ex) {
+        } catch (CalmIntegrationException | JSONException ex) {
             throw new CalmIntegrationException("App:" + appName + " is not present in Calm.");
         }
     }
